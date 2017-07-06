@@ -16,7 +16,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 import win32com.client
 
-comecocode = time.time()
+time.sleep(1.5)
+
 wb = xlwt.Workbook() 
 ws = wb.add_sheet('Grupos')
 grupos_list= [['Nome do Grupo','Instituição','Líder(es)','Área','Localidade','Ano de Formação','Grande Área']]
@@ -82,8 +83,42 @@ while True:
  except:
   pass
 
+"""
+#Select UFF  //*[@id="idFormConsultaParametrizada:idGrandeArea"]
+while True:
+ try:
+  triggerDropDown = browser.find_element_by_xpath("//*[@id='idFormConsultaParametrizada:idInst']/div[3]")
+  triggerDropDown.click();
+  item = triggerDropDown.find_element_by_xpath("//*[@id='idFormConsultaParametrizada:idInst_panel']/div/ul/li[71]")
+  item.click() 
+  break
+ except:
+  pass
 
+ #Select Grande Area  
+while True:
+ try:
+  triggerDropDown = browser.find_element_by_xpath("//*[@id='idFormConsultaParametrizada:idGrandeArea']/div[3]")
+  triggerDropDown.click();
+  item = triggerDropDown.find_element_by_xpath("//*[@id='idFormConsultaParametrizada:idGrandeArea_panel']/div/ul/li[7]")
+  item.click() 
+  break
+ except:
+  pass
 
+browser.execute_script("window.scrollTo(0, 1200);")
+  
+ #Select Area 
+while True:
+ try:
+  triggerDropDown = browser.find_element_by_xpath("//*[@id='idFormConsultaParametrizada:idArea_label']")
+  triggerDropDown.click();
+  item = triggerDropDown.find_element_by_xpath("//*[@id='idFormConsultaParametrizada:idArea_panel']/div/ul/li[2]")
+  item.click() 
+  break
+ except:
+  pass
+"""
 time.sleep(1)
 browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 time.sleep(1)
@@ -114,13 +149,18 @@ for z in range(0,numero):
    y = z*100
 
    y= x + y 
-   time.sleep(1)
-   eula = browser.find_element_by_id("idFormConsultaParametrizada:resultadoDataList:%d:idBtnVisualizarEspelhoGrupo"%(y))
+   
+   while True:
+    try: 
+     eula = browser.find_element_by_id("idFormConsultaParametrizada:resultadoDataList:%d:idBtnVisualizarEspelhoGrupo"%(y))
+     break
+    except:
+     pass
    
    browser.execute_script('arguments[0].scrollTo = arguments[0].scrollIntoView(true)', eula)
    action = ActionChains(browser)
    action.move_to_element(eula).perform()
-   time.sleep(2)
+   time.sleep(0.5)
    wait = WebDriverWait(browser, 2).until(
        EC.presence_of_element_located((By.XPATH,"//*[@id='idFormConsultaParametrizada:resultadoDataList:%d:idBtnVisualizarEspelhoGrupo']" %(y)))
     )
@@ -161,7 +201,7 @@ for z in range(0,numero):
 
    grupo.click()
 
-   time.sleep(1)
+   time.sleep(0.5)
    browser.switch_to_window(browser.window_handles[1])
 
    try:
@@ -198,7 +238,7 @@ for z in range(0,numero):
 
 
 
-   time.sleep(1)
+   time.sleep(0.5)
    browser.close() #closes new tab
    browser.switch_to_window(curWindowHndl)
    t = y + 1
@@ -206,18 +246,15 @@ for z in range(0,numero):
     break
  
  #click next:
- time.sleep(5)
+ #time.sleep(5)
  browser.find_element_by_xpath("//*[@id='idFormConsultaParametrizada:resultadoDataList_paginator_bottom']/span[4]").click()
  time.sleep(10)
    
-finalcode = time.time()   
-listinha = ['Nome do Grupo','Instituição','Líder(es)','Área',str(comecocode),str(finalcode),str(finalcode-comecocode)]
-grupos_list.append(listinha)
 
 with open ('Grupos_CSV.csv','w', newline='') as file:
     writer=csv.writer(file)
     for row in grupos_list:
-        writer.writerow([row])
+        writer.writerows([row])
 
 
 #time.sleep(10)
